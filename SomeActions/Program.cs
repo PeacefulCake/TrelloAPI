@@ -11,31 +11,37 @@ namespace SomeActions
   class Program
   {
 
-    static string UserToken = "11";
-    static string DeveloperKey = "11";
+
 
     static void Main(string[] args)
     {
-      ITrello trello = new Trello(DeveloperKey, true);
+      ITrello trello = new Trello(Configuration.DeveloperKey, true);
 
+      var url = trello.GetAuthorizationUrl("MyApp", Scope.ReadWrite);
 
       //trello.
       //httpWebRequest.Proxy.Credentials = CredentialCache.DefaultCredentials;
       //var cc = CredentialCache.DefaultCredentials;
 
 
-      trello.Authorize(UserToken);
+      trello.Authorize(Configuration.UserToken);
       
 
       // Get the authenticated member
-      //Member me = trello.Members.Me();
+      Member me = trello.Members.Me();
       //Console.WriteLine(me.FullName);
 
 
       
 
-      //var myBoard = trello.Boards.ForMember(me);
-      var board = trello.Boards.WithId("5a5c32dcac1b363264c4e25a");
+      var myBoards = trello.Boards.ForMember(me);
+
+
+      var myBoard = myBoards.Where(b=>b.Name == "WorkBoard").FirstOrDefault();
+      var list = trello.Lists.ForBoard(myBoard).FirstOrDefault();
+      trello.Cards.Add("Новый картен", list);
+
+      /*var board = trello.Boards.WithId("5a5c32dcac1b363264c4e25a");
       var lists = trello.Lists.ForBoard(board); //Where(l=>l.Name == "Неделя 29.01 - 02.02").FirstOrDefault()
 
       foreach (var list in lists)
@@ -89,7 +95,7 @@ namespace SomeActions
           Console.WriteLine(string.Format("{0}: {1}", cardMember.FullName, membersTotalPlan[memId]));
         }
         Console.WriteLine();
-      }
+      }*/
       
 
 
